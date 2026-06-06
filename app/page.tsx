@@ -1,63 +1,51 @@
-import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+    <div className="min-h-screen bg-slate-950 text-slate-100">
+      <main className="mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-6 py-16 sm:px-10 lg:px-12">
+        <div className="rounded-[2rem] border border-white/5 bg-slate-900/90 p-10 shadow-2xl shadow-black/20 sm:p-12">
+          <div className="grid gap-12 lg:grid-cols-[1.25fr_0.9fr] lg:items-center">
+            <div>
+              <p className="text-sm uppercase tracking-[0.35em] text-cyan-300">Grievance OS</p>
+              <h1 className="mt-6 text-5xl font-semibold tracking-tight text-white sm:text-6xl">
+                Secure authentication for your dashboard.
+              </h1>
+              <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">
+                Sign in or sign up with Supabase Auth to reach the protected dashboard experience.
+                The app will redirect authenticated users directly to <strong>/dashboard</strong>.
+              </p>
+              <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+                <Link
+                  href="/login"
+                  className="inline-flex items-center justify-center rounded-2xl bg-cyan-500 px-6 py-3 text-base font-semibold text-slate-950 transition hover:bg-cyan-400"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/signup"
+                  className="inline-flex items-center justify-center rounded-2xl border border-white/10 px-6 py-3 text-base font-semibold text-white transition hover:border-cyan-400 hover:text-cyan-200"
+                >
+                  Create account
+                </Link>
+              </div>
+            </div>
+
+            <div className="rounded-[2rem] border border-white/10 bg-slate-950/90 p-8 text-slate-300 shadow-lg shadow-slate-950/20">
+              <p className="text-sm uppercase tracking-[0.35em] text-cyan-300">Protected routes</p>
+              <ul className="mt-6 space-y-4 text-base leading-7 text-slate-300">
+                <li className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+                  <strong className="text-white">/dashboard</strong> is protected and requires authentication.
+                </li>
+                <li className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+                  Unauthenticated users are redirected to <strong>/login</strong>.
+                </li>
+                <li className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+                  Supabase Auth handles login and sign-up flows.
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </main>
     </div>
