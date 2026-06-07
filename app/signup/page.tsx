@@ -37,30 +37,44 @@ export default function SignupPage() {
     setError(null);
     setMessage(null);
 
-    const supabase = createBrowserSupabaseClient();
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { full_name: fullName } },
-    });
+    try {
+      const supabase = createBrowserSupabaseClient();
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: fullName } },
+      });
 
-    setLoading(false);
+      if (error) {
+        setError(error.message || "Sign up failed");
+        return;
+      }
 
-    if (error) {
-      setError(error.message);
-      return;
-    }
+      // If a session is returned, user is signed in immediately.
+      if (data?.session) {
+        document.cookie = "grievance-auth=true; path=/; sameSite=lax";
+        router.push("/dashboard");
+        return;
+      }
 
-    if (data.session) {
+      // If no session (email confirmation flow), but Supabase returns a user object,
+      // store the user id temporarily so onboarding can link the organization to the profile.
+      if (data?.user?.id) {
+        try {
+          sessionStorage.setItem("pendingUserId", data.user.id);
+        } catch (e) {
+          // ignore storage errors
+        }
+      }
+
+      // allow access to onboarding (middleware checks this cookie);
       document.cookie = "grievance-auth=true; path=/; sameSite=lax";
-      router.push("/dashboard");
-      return;
+      router.push("/onboarding");
+    } catch (err: any) {
+      setError(err?.message || "Unexpected error during sign up");
+    } finally {
+      setLoading(false);
     }
-
-    // If sign-up did not immediately return a session (email confirmation flows),
-    // set a lightweight auth marker and send the user to onboarding to complete organization setup.
-    document.cookie = "grievance-auth=true; path=/; sameSite=lax";
-    router.push("/onboarding");
   };
 
   return (

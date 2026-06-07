@@ -21,14 +21,30 @@ export default function OnboardingPage() {
     try {
       const supabase = createBrowserSupabaseClient();
 
+      // include a pending user id if available (signup flows without immediate session)
+      let pendingUserId: string | null = null;
+      try {
+        pendingUserId = sessionStorage.getItem("pendingUserId");
+      } catch (e) {
+        pendingUserId = null;
+      }
+
+      const payload: any = { orgName, localNumber, unionAffiliation };
+      if (pendingUserId) payload.userId = pendingUserId;
+
       const res = await fetch("/api/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orgName, localNumber, unionAffiliation }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Failed to create organization");
+
+      // clear temporary pending user id after successful onboarding
+      try {
+        sessionStorage.removeItem("pendingUserId");
+      } catch (e) {}
 
       router.push("/dashboard");
     } catch (err: any) {
