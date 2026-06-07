@@ -7,6 +7,7 @@ import { createBrowserSupabaseClient } from "@/lib/supabase";
 
 export default function SignupPage() {
   const router = useRouter();
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -39,6 +40,7 @@ export default function SignupPage() {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: { data: { full_name: fullName } },
     });
 
     setLoading(false);
@@ -54,9 +56,10 @@ export default function SignupPage() {
       return;
     }
 
-    setMessage(
-      "A verification email has been sent. Once confirmed, sign in to continue."
-    );
+    // If sign-up did not immediately return a session (email confirmation flows),
+    // set a lightweight auth marker and send the user to onboarding to complete organization setup.
+    document.cookie = "grievance-auth=true; path=/; sameSite=lax";
+    router.push("/onboarding");
   };
 
   return (
@@ -74,6 +77,21 @@ export default function SignupPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-300" htmlFor="fullName">
+                Full name
+              </label>
+              <input
+                id="fullName"
+                type="text"
+                value={fullName}
+                onChange={(event) => setFullName(event.target.value)}
+                required
+                className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-500/10"
+                placeholder="Your name"
+              />
+            </div>
+
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-300" htmlFor="email">
                 Email address
