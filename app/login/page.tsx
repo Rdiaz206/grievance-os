@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase";
+import { Input, Label, Button } from "@/components/ui";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -71,44 +72,36 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-300" htmlFor="email">
-                Email address
-              </label>
-              <input
+              <Label htmlFor="email">Email address</Label>
+              <Input
                 id="email"
                 type="email"
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => setEmail(event.target.value)}
                 required
-                className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-500/10"
                 placeholder="you@example.com"
+                className="rounded-2xl"
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-300" htmlFor="password">
-                Password
-              </label>
-              <input
+              <Label htmlFor="password">Password</Label>
+              <Input
                 id="password"
                 type="password"
                 value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)}
                 required
-                className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-500/10"
                 placeholder="Enter your password"
+                className="rounded-2xl"
               />
             </div>
 
             {error ? <p className="rounded-2xl bg-red-500/10 px-4 py-3 text-sm text-red-200">{error}</p> : null}
 
-            <button
-              type="submit"
-              className="w-full rounded-2xl bg-cyan-500 px-5 py-3 text-base font-semibold text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={loading}
-            >
-              {loading ? "Signing in…" : "Sign in"}
-            </button>
+            <div>
+              <Button type="submit" className="w-full">{loading ? "Signing in…" : "Sign in"}</Button>
+            </div>
           </form>
 
           <p className="mt-8 text-center text-sm text-slate-400">

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabaseClient } from "@/lib/supabase";
+import { Input, Label, Button } from "@/components/ui";
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -43,42 +44,25 @@ export default function OnboardingPage() {
         <h1 className="text-2xl font-semibold mb-4">Create your organization</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700">Organization name</label>
-            <input
-              required
-              value={orgName}
-              onChange={(e) => setOrgName(e.target.value)}
-              className="mt-1 w-full rounded-md border px-3 py-2"
-            />
+            <Label>Organization name</Label>
+            <Input required value={orgName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setOrgName(e.target.value)} />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700">Local number</label>
-            <input
-              value={localNumber}
-              onChange={(e) => setLocalNumber(e.target.value)}
-              className="mt-1 w-full rounded-md border px-3 py-2"
-            />
+            <Label>Local number</Label>
+            <Input value={localNumber} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLocalNumber(e.target.value)} />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700">Union affiliation</label>
-            <input
-              value={unionAffiliation}
-              onChange={(e) => setUnionAffiliation(e.target.value)}
-              className="mt-1 w-full rounded-md border px-3 py-2"
-            />
+            <Label>Union affiliation</Label>
+            <Input value={unionAffiliation} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUnionAffiliation(e.target.value)} />
           </div>
 
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
-          <button
-            type="submit"
-            className="w-full rounded-md bg-cyan-600 px-4 py-2 text-white disabled:opacity-60"
-            disabled={loading}
-          >
-            {loading ? "Creating…" : "Create organization"}
-          </button>
+          <div>
+            <Button type="submit" className="w-full">{loading ? "Creating…" : "Create organization"}</Button>
+          </div>
         </form>
       </div>
     </div>
