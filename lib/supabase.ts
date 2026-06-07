@@ -1,10 +1,5 @@
 import { createBrowserClient, createServerClient } from "@supabase/ssr";
 
-const supabaseUrl = getRequiredEnv("NEXT_PUBLIC_SUPABASE_URL");
-const supabaseAnonKey = getRequiredEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY");
-
-validateSupabaseConfig({ supabaseUrl, supabaseAnonKey });
-
 function getRequiredEnv(name: string): string {
   const value = process.env[name];
 
@@ -31,12 +26,23 @@ function validateSupabaseConfig({ supabaseUrl, supabaseAnonKey }: { supabaseUrl:
   }
 }
 
+function getSupabaseConfig() {
+  const supabaseUrl = getRequiredEnv("NEXT_PUBLIC_SUPABASE_URL");
+  const supabaseAnonKey = getRequiredEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+
+  validateSupabaseConfig({ supabaseUrl, supabaseAnonKey });
+
+  return { supabaseUrl, supabaseAnonKey };
+}
+
 export const createBrowserSupabaseClient = () => {
   if (typeof window === "undefined") {
     throw new Error(
       "createBrowserSupabaseClient must only be called in browser-rendered code."
     );
   }
+
+  const { supabaseUrl, supabaseAnonKey } = getSupabaseConfig();
 
   return createBrowserClient(supabaseUrl, supabaseAnonKey, {
     isSingleton: true,
@@ -55,6 +61,8 @@ export const createServerSupabaseClient = (cookies: any) => {
       "createServerSupabaseClient requires a valid cookies object from the server request."
     );
   }
+
+  const { supabaseUrl, supabaseAnonKey } = getSupabaseConfig();
 
   return createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: cookies as any,
