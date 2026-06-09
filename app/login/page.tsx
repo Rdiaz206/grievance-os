@@ -12,17 +12,22 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [initError, setInitError] = useState<string | null>(null);
 
   useEffect(() => {
     const checkSession = async () => {
-      const supabase = createBrowserSupabaseClient();
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      try {
+        const supabase = createBrowserSupabaseClient();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
-      if (session) {
-        document.cookie = "grievance-auth=true; path=/; sameSite=lax";
-        router.replace("/dashboard");
+        if (session) {
+          document.cookie = "grievance-auth=true; path=/; sameSite=lax";
+          router.replace("/dashboard");
+        }
+      } catch (err: any) {
+        setInitError(err?.message || "Failed to initialize Supabase");
       }
     };
 
@@ -34,26 +39,30 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
 
-    const supabase = createBrowserSupabaseClient();
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const supabase = createBrowserSupabaseClient();
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    setLoading(false);
+      if (error) {
+        setError(error.message);
+        return;
+      }
 
-    if (error) {
-      setError(error.message);
-      return;
+      if (data.session) {
+        document.cookie = "grievance-auth=true; path=/; sameSite=lax";
+        router.push("/dashboard");
+        return;
+      }
+
+      setError("Unable to sign in. Please check your credentials and try again.");
+    } catch (err: any) {
+      setError(err?.message || "Unexpected error during sign in");
+    } finally {
+      setLoading(false);
     }
-
-    if (data.session) {
-      document.cookie = "grievance-auth=true; path=/; sameSite=lax";
-      router.push("/dashboard");
-      return;
-    }
-
-    setError("Unable to sign in. Please check your credentials and try again.");
   };
 
   return (
@@ -69,6 +78,12 @@ export default function LoginPage() {
               Access your dashboard and manage your workflow securely with Supabase authentication.
             </p>
           </div>
+
+          {initError ? (
+            <div className="rounded-2xl bg-red-500/20 border border-red-500/50 px-4 py-3 mb-6 text-sm text-red-100">
+              <strong>Configuration Error:</strong> {initError}
+            </div>
+          ) : null}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>

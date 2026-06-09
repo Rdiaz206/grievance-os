@@ -14,17 +14,22 @@ export default function SignupPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [initError, setInitError] = useState<string | null>(null);
 
   useEffect(() => {
     const checkSession = async () => {
-      const supabase = createBrowserSupabaseClient();
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      try {
+        const supabase = createBrowserSupabaseClient();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
-      if (session) {
-        document.cookie = "grievance-auth=true; path=/; sameSite=lax";
-        router.replace("/dashboard");
+        if (session) {
+          document.cookie = "grievance-auth=true; path=/; sameSite=lax";
+          router.replace("/dashboard");
+        }
+      } catch (err: any) {
+        setInitError(err?.message || "Failed to initialize Supabase");
       }
     };
 
@@ -90,6 +95,12 @@ export default function SignupPage() {
               Register quickly and securely to access the dashboard experience.
             </p>
           </div>
+
+          {initError ? (
+            <div className="rounded-2xl bg-red-500/20 border border-red-500/50 px-4 py-3 mb-6 text-sm text-red-100">
+              <strong>Configuration Error:</strong> {initError}
+            </div>
+          ) : null}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>

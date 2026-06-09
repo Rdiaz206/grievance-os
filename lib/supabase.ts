@@ -1,38 +1,33 @@
 import { createBrowserClient, createServerClient } from "@supabase/ssr";
 
-function getRequiredEnv(name: string): string {
-  const value = process.env[name];
+// Access env vars at module scope so Next.js build tools can replace them at build time
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
-  if (!value) {
+function validateSupabaseConfig(supabaseUrl: string, supabaseAnonKey: string) {
+  if (!supabaseUrl) {
     throw new Error(
-      `Supabase initialization failed: environment variable ${name} is required.`
+      "Supabase configuration error: NEXT_PUBLIC_SUPABASE_URL is not set. Please ensure it is defined in your environment variables."
     );
   }
 
-  return value;
-}
+  if (!supabaseAnonKey) {
+    throw new Error(
+      "Supabase configuration error: NEXT_PUBLIC_SUPABASE_ANON_KEY is not set. Please ensure it is defined in your environment variables."
+    );
+  }
 
-function validateSupabaseConfig({ supabaseUrl, supabaseAnonKey }: { supabaseUrl: string; supabaseAnonKey: string }) {
   if (!/^https?:\/\//i.test(supabaseUrl)) {
     throw new Error(
-      "Supabase initialization failed: NEXT_PUBLIC_SUPABASE_URL must be a valid URL starting with http:// or https://."
+      "Supabase configuration error: NEXT_PUBLIC_SUPABASE_URL must be a valid URL starting with http:// or https://."
     );
   }
 
   if (!supabaseAnonKey.startsWith("sb_")) {
     throw new Error(
-      "Supabase initialization failed: NEXT_PUBLIC_SUPABASE_ANON_KEY does not appear to be a valid Supabase anon key."
+      "Supabase configuration error: NEXT_PUBLIC_SUPABASE_ANON_KEY does not appear to be a valid Supabase anon key (should start with 'sb_')."
     );
   }
-}
-
-function getSupabaseConfig() {
-  const supabaseUrl = getRequiredEnv("NEXT_PUBLIC_SUPABASE_URL");
-  const supabaseAnonKey = getRequiredEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY");
-
-  validateSupabaseConfig({ supabaseUrl, supabaseAnonKey });
-
-  return { supabaseUrl, supabaseAnonKey };
 }
 
 export const createBrowserSupabaseClient = () => {
@@ -42,9 +37,9 @@ export const createBrowserSupabaseClient = () => {
     );
   }
 
-  const { supabaseUrl, supabaseAnonKey } = getSupabaseConfig();
+  validateSupabaseConfig(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  return createBrowserClient(supabaseUrl, supabaseAnonKey, {
+  return createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     isSingleton: true,
   });
 };
@@ -62,9 +57,9 @@ export const createServerSupabaseClient = (cookies: any) => {
     );
   }
 
-  const { supabaseUrl, supabaseAnonKey } = getSupabaseConfig();
+  validateSupabaseConfig(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  return createServerClient(supabaseUrl, supabaseAnonKey, {
+  return createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     cookies: cookies as any,
   });
 };

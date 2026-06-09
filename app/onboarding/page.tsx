@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabaseClient } from "@/lib/supabase";
 import { Input, Label, Button } from "@/components/ui";
@@ -12,6 +12,15 @@ export default function OnboardingPage() {
   const [unionAffiliation, setUnionAffiliation] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [initError, setInitError] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      createBrowserSupabaseClient();
+    } catch (err: any) {
+      setInitError(err?.message || "Failed to initialize Supabase");
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +67,13 @@ export default function OnboardingPage() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="w-full max-w-lg rounded-xl bg-white p-8 shadow">
         <h1 className="text-2xl font-semibold mb-4">Create your organization</h1>
+
+        {initError ? (
+          <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 mb-6 text-sm text-red-700">
+            <strong>Configuration Error:</strong> {initError}
+          </div>
+        ) : null}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label>Organization name</Label>
